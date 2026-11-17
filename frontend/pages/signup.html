@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triad DMS | Create Account</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-5">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl p-10">
+
+        <h1 class="text-3xl font-bold text-slate-900 mb-2">
+            Create Account
+        </h1>
+
+        <p class="text-slate-500 mb-8">
+            Join the Triad DMS workspace.
+        </p>
+
+        <form id="signupForm" onsubmit="registerUser(event)">
+
+            <label class="block text-sm font-medium mb-2">Full Name</label>
+            <input type="text" id="name" required class="form-input mb-5"
+                   placeholder="Enter your full name">
+
+            <label class="block text-sm font-medium mb-2">Email Address</label>
+            <input type="email" id="email" required class="form-input mb-5"
+                   placeholder="you@example.com">
+
+            <label class="block text-sm font-medium mb-2">Password</label>
+            <input type="password" id="password" required minlength="8"
+                   class="form-input mb-5" placeholder="Minimum 8 characters">
+
+            <label class="block text-sm font-medium mb-2">Division</label>
+            <input type="text" id="division" required class="form-input mb-6"
+                   placeholder="e.g. Engineering">
+
+            <button type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold">
+                Create Account
+            </button>
+
+            <p id="message" class="mt-4 text-sm text-center"></p>
+
+        </form>
+
+        <p class="text-center text-sm text-slate-500 mt-7">
+            Already have an account?
+            <a href="/" class="text-blue-600 font-semibold hover:underline">
+                Sign in
+            </a>
+        </p>
+
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Document | Triad DMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+
+            <h1 class="text-2xl font-bold mb-2">TRIAD DMS</h1>
+
+            <p class="text-slate-400 text-sm mb-10">
+                Document Management System
+            </p>
+
+            <nav class="space-y-3">
+
+                <a href="/static/pages/dashboard.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Dashboard
+                </a>
+
+                <a href="/static/pages/upload.html"
+                   class="block bg-blue-600 px-4 py-3 rounded-lg">
+                    Upload Document
+                </a>
+
+                <a href="/static/pages/search.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Search Documents
+                </a>
+
+                <a href="/static/pages/access_requests.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Access Requests
+                </a>
+
+                <a href="/static/pages/admin.html"
+                   id="adminLink"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Admin Settings
+                </a>
+
+            </nav>
+
+            <button onclick="logoutUser()"
+                class="w-full mt-12 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg">
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+
+            <!-- Header -->
+            <div class="mb-8">
+
+                <h2 class="text-3xl font-bold text-slate-800">
+                    Upload Document
+                </h2>
+
+                <p class="text-slate-500 mt-2">
+                    Add a new document to your division's workspace.
+                </p>
+
+            </div>
+
+
+            <!-- Upload Form -->
+            <div class="max-w-4xl bg-white rounded-xl shadow-sm p-6 md:p-8">
+
+                <form id="uploadForm" onsubmit="uploadDocument(event)">
+
+                    <!-- Document Information -->
+                    <h3 class="text-xl font-bold text-slate-800 mb-6">
+                        Document Information
+                    </h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Document Title -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">
+                                Document Title *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="title"
+                                name="title"
+                                class="form-input"
+                                placeholder="Enter document title"
+                                required
+                            >
+                        </div>
+
+
+                        <!-- Division -->
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">
+                                Division *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="division"
+                                name="division"
+                                class="form-input bg-slate-100"
+                                readonly
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+
+                    <!-- Description -->
+                    <div class="mt-6">
+
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Description
+                        </label>
+
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="4"
+                            class="form-input"
+                            placeholder="Enter a brief description of the document">
+                        </textarea>
+
+                    </div>
+
+
+                    <!-- File Upload -->
+                    <div class="mt-6">
+
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Select Document *
+                        </label>
+
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-500 transition">
+
+                            <input
+                                type="file"
+                                id="file"
+                                name="file"
+                                class="hidden"
+                                accept=".pdf,.png,.jpg,.jpeg,.txt,.docx"
+                                required
+                                onchange="displaySelectedFile()"
+                            >
+
+                            <label for="file" class="cursor-pointer">
+
+                                <div class="text-4xl mb-3">
+                                    📁
+                                </div>
+
+                                <p class="font-semibold text-slate-700">
+                                    Click to select a document
+                                </p>
+
+                                <p class="text-sm text-slate-500 mt-2">
+                                    Supported formats: PDF, PNG, JPG, TXT, DOCX
+                                </p>
+
+                            </label>
+
+                            <p id="selectedFile"
+                               class="text-sm text-blue-600 mt-4 font-medium">
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Dynamic Metadata -->
+                    <div class="mt-8">
+
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">
+                            Additional Metadata
+                        </h3>
+
+                        <p class="text-sm text-slate-500 mb-5">
+                            Provide additional information based on the document type.
+                        </p>
+
+                        <div id="metadataFields"
+                             class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                            <p class="text-sm text-slate-400">
+                                Loading metadata fields...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Upload Progress -->
+                    <div id="uploadProgressContainer" class="hidden mt-6">
+
+                        <div class="flex justify-between text-sm mb-2">
+
+                            <span class="text-slate-600">
+                                Uploading document...
+                            </span>
+
+                            <span id="progressText">
+                                Please wait
+                            </span>
+
+                        </div>
+
+                        <div class="w-full bg-slate-200 rounded-full h-2">
+
+                            <div id="progressBar"
+                                 class="bg-blue-600 h-2 rounded-full"
+                                 style="width: 0%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Messages -->
+                    <div id="uploadMessage"
+                         class="message mt-5"
+                         role="status"
+                         aria-live="polite">
+                    </div>
+
+
+                    <!-- Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 mt-8">
+
+                        <button
+                            type="submit"
+                            id="uploadButton"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold">
+                            Upload Document
+                        </button>
+
+                        <button
+                            type="reset"
+                            onclick="resetUploadForm()"
+                            class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-8 py-3 rounded-lg font-semibold">
+                            Clear Form
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <p class="text-center text-slate-400 text-sm mt-8">
+                Triad AI | Document Management System
+            </p>
+
+        </main>
+
+    </div>
+
+
+    <script src="/static/js/upload.js"></script>
+
+</body>
+</html>

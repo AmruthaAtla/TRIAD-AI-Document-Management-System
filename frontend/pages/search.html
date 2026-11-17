@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Documents | Triad DMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+
+            <h1 class="text-2xl font-bold mb-2">TRIAD DMS</h1>
+
+            <p class="text-slate-400 text-sm mb-10">
+                Document Management System
+            </p>
+
+            <nav class="space-y-3">
+
+                <a href="/static/pages/dashboard.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Dashboard
+                </a>
+
+                <a href="/static/pages/upload.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Upload Document
+                </a>
+
+                <a href="/static/pages/search.html"
+                   class="block bg-blue-600 px-4 py-3 rounded-lg">
+                    Search Documents
+                </a>
+
+                <a href="/static/pages/access_requests.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Access Requests
+                </a>
+
+                <a href="/static/pages/admin.html"
+                   id="adminLink"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Admin Settings
+                </a>
+
+            </nav>
+
+            <button onclick="logoutUser()"
+                class="w-full mt-12 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg">
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+
+            <!-- Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">
+                    Search Documents
+                </h2>
+
+                <p class="text-slate-500 mt-2">
+                    Search across document titles, filenames, custom metadata, and OCR-extracted text.
+                </p>
+            </div>
+
+
+            <!-- Search Bar Box -->
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-8 max-w-5xl">
+                <form id="searchForm" onsubmit="handleSearch(event)" class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative flex-1">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400">
+                            🔍
+                        </span>
+                        <input
+                            type="text"
+                            id="searchQuery"
+                            class="form-input pl-11"
+                            placeholder="Enter keywords (e.g. invoice, financial, OCR content...)"
+                            required
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="searchButton"
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition"
+                    >
+                        Search
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="clearSearch()"
+                        class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-lg font-semibold transition"
+                    >
+                        Clear
+                    </button>
+                </form>
+            </div>
+
+
+            <!-- Search Results Section -->
+            <section class="bg-white rounded-xl shadow-sm p-6 max-w-5xl">
+
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Search Results
+                        </h3>
+                        <p id="searchSummary" class="text-sm text-slate-500 mt-1">
+                            Enter a search query above to begin.
+                        </p>
+                    </div>
+
+                    <span id="resultCountBadge" class="hidden text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full">
+                        0 Results
+                    </span>
+                </div>
+
+                <!-- Initial Prompt -->
+                <div id="initialState" class="text-center py-12 text-slate-400">
+                    <div class="text-5xl mb-3">📄</div>
+                    <p class="font-medium text-slate-600">Start searching your document library</p>
+                    <p class="text-sm mt-1">Full-text search queries titles, filenames, dynamic metadata, and OCR text.</p>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="hidden text-center py-12 text-slate-500">
+                    <div class="inline-block animate-spin text-3xl mb-3">⏳</div>
+                    <p class="font-medium">Searching documents...</p>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorMessage" class="hidden text-center py-8 text-red-600 bg-red-50 rounded-xl p-4 mb-4">
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden text-center py-12 text-slate-400">
+                    <div class="text-5xl mb-3">🔎</div>
+                    <p class="font-medium text-slate-600 text-lg">No matching documents found</p>
+                    <p class="text-sm mt-1">Try refining your keyword or searching by document title, metadata, or OCR content.</p>
+                </div>
+
+                <!-- Results List Container -->
+                <div id="resultsList" class="space-y-4">
+                </div>
+
+            </section>
+
+            <p class="text-center text-slate-400 text-sm mt-8">
+                Triad AI | Document Management System
+            </p>
+
+        </main>
+
+    </div>
+
+    <script src="/static/js/search.js"></script>
+
+</body>
+</html>

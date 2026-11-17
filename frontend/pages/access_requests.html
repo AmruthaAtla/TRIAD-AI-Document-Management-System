@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Requests | Triad DMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+
+            <h1 class="text-2xl font-bold mb-2">TRIAD DMS</h1>
+
+            <p class="text-slate-400 text-sm mb-10">
+                Document Management System
+            </p>
+
+            <nav class="space-y-3">
+
+                <a href="/static/pages/dashboard.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Dashboard
+                </a>
+
+                <a href="/static/pages/upload.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Upload Document
+                </a>
+
+                <a href="/static/pages/search.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Search Documents
+                </a>
+
+                <a href="/static/pages/access_requests.html"
+                   class="block bg-blue-600 px-4 py-3 rounded-lg">
+                    Access Requests
+                </a>
+
+                <a href="/static/pages/admin.html"
+                   id="adminLink"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Admin Settings
+                </a>
+
+            </nav>
+
+            <button onclick="logoutUser()"
+                class="w-full mt-12 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg">
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800">
+                        Access Requests Portal
+                    </h2>
+
+                    <p class="text-slate-500 mt-1">
+                        Manage cross-division document access permissions and review pending requests.
+                    </p>
+                </div>
+
+                <button
+                    onclick="openNewRequestModal()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm transition inline-flex items-center gap-2 self-start md:self-auto"
+                >
+                    <span>➕</span> Request Document Access
+                </button>
+            </div>
+
+
+            <!-- Tabs Navigation -->
+            <div class="border-b border-slate-200 mb-6 flex gap-4">
+                <button
+                    id="tabIncoming"
+                    onclick="switchTab('incoming')"
+                    class="pb-3 px-4 font-bold border-b-2 border-blue-600 text-blue-600 transition flex items-center gap-2"
+                >
+                    <span>📥 Incoming Requests</span>
+                    <span id="incomingBadge" class="hidden text-xs bg-blue-100 text-blue-800 font-semibold px-2 py-0.5 rounded-full">0</span>
+                </button>
+
+                <button
+                    id="tabOutgoing"
+                    onclick="switchTab('outgoing')"
+                    class="pb-3 px-4 font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition flex items-center gap-2"
+                >
+                    <span>📤 Outgoing Requests</span>
+                    <span id="outgoingBadge" class="hidden text-xs bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+
+
+            <!-- Loading State -->
+            <div id="loadingRequests" class="bg-white rounded-xl shadow-sm p-12 text-center text-slate-500">
+                <div class="inline-block animate-spin text-3xl mb-3">⏳</div>
+                <p class="font-medium">Loading access requests...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="requestsError" class="hidden bg-red-50 text-red-700 p-4 rounded-xl text-center mb-6"></div>
+
+
+            <!-- INCOMING REQUESTS VIEW -->
+            <section id="incomingSection" class="hidden space-y-4 max-w-5xl">
+                <div id="incomingList" class="space-y-4"></div>
+
+                <div id="incomingEmpty" class="hidden bg-white rounded-xl shadow-sm p-12 text-center text-slate-400">
+                    <div class="text-5xl mb-3">📬</div>
+                    <p class="font-semibold text-slate-700 text-lg">No Pending Requests</p>
+                    <p class="text-sm mt-1">There are no pending access requests for documents belonging to your division.</p>
+                </div>
+            </section>
+
+
+            <!-- OUTGOING REQUESTS VIEW -->
+            <section id="outgoingSection" class="hidden space-y-4 max-w-5xl">
+                <div id="outgoingList" class="space-y-4"></div>
+
+                <div id="outgoingEmpty" class="hidden bg-white rounded-xl shadow-sm p-12 text-center text-slate-400">
+                    <div class="text-5xl mb-3">📭</div>
+                    <p class="font-semibold text-slate-700 text-lg">No Outgoing Requests</p>
+                    <p class="text-sm mt-1">You have not submitted any access requests for other division documents.</p>
+                </div>
+            </section>
+
+
+            <!-- NEW ACCESS REQUEST MODAL -->
+            <div id="newRequestModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Request Cross-Division Access
+                        </h3>
+                        <button onclick="closeNewRequestModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">
+                            ✕
+                        </button>
+                    </div>
+
+                    <p class="text-slate-500 text-sm mb-6">
+                        Provide the document ID of the document you want to access, along with a justification.
+                    </p>
+
+                    <form id="newRequestForm" onsubmit="submitNewAccessRequest(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">
+                                Document ID *
+                            </label>
+                            <input
+                                type="text"
+                                id="modalDocId"
+                                class="form-input"
+                                placeholder="Enter 24-character Document ID"
+                                required
+                            >
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-2">
+                                Reason for Request *
+                            </label>
+                            <textarea
+                                id="modalReason"
+                                rows="3"
+                                class="form-input"
+                                placeholder="State the business justification for accessing this file..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div id="modalMessage" class="hidden text-sm p-3 rounded-lg"></div>
+
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button
+                                type="button"
+                                onclick="closeNewRequestModal()"
+                                class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-lg transition text-sm"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                id="modalSubmitBtn"
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition text-sm"
+                            >
+                                Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <p class="text-center text-slate-400 text-sm mt-8">
+                Triad AI | Document Management System
+            </p>
+
+        </main>
+
+    </div>
+
+    <script src="/static/js/access.js"></script>
+
+</body>
+</html>

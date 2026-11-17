@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Triad DMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+
+            <h1 class="text-2xl font-bold mb-2">TRIAD DMS</h1>
+            <p class="text-slate-400 text-sm mb-10">
+                Document Management System
+            </p>
+
+            <nav class="space-y-3">
+
+                <a href="/static/pages/dashboard.html"
+                   class="block bg-blue-600 px-4 py-3 rounded-lg">
+                    Dashboard
+                </a>
+
+                <a href="/static/pages/upload.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Upload Document
+                </a>
+
+                <a href="/static/pages/search.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Search Documents
+                </a>
+
+                <a href="/static/pages/access_requests.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Access Requests
+                </a>
+
+                <a href="/static/pages/admin.html"
+                   id="adminLink"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Admin Settings
+                </a>
+
+            </nav>
+
+            <button onclick="logoutUser()"
+                class="w-full mt-12 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg">
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+
+            <!-- Header -->
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800">
+                        Dashboard
+                    </h2>
+
+                    <p class="text-slate-500 mt-1">
+                        Welcome to your document workspace.
+                    </p>
+                </div>
+
+                <div class="bg-white px-5 py-3 rounded-xl shadow-sm">
+                    <p id="userName" class="font-semibold text-slate-800">
+                        Loading user...
+                    </p>
+                    <p id="userDivision" class="text-sm text-slate-500">
+                        Loading division...
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-slate-500 text-sm">Total Documents</p>
+                    <h3 id="totalDocuments" class="text-3xl font-bold text-slate-800 mt-3">
+                        0
+                    </h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-slate-500 text-sm">Your Division</p>
+                    <h3 id="divisionCard" class="text-xl font-bold text-blue-700 mt-3">
+                        -
+                    </h3>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm">
+                    <p class="text-slate-500 text-sm">Account Role</p>
+                    <h3 id="userRole" class="text-xl font-bold text-green-700 mt-3">
+                        -
+                    </h3>
+                </div>
+
+            </div>
+
+
+            <!-- Documents Section -->
+            <section class="bg-white rounded-xl shadow-sm p-6">
+
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
+
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">
+                            Recent Documents
+                        </h3>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            Documents available to your division.
+                        </p>
+                    </div>
+
+                    <a href="/static/pages/upload.html"
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg text-center">
+                        + Upload Document
+                    </a>
+
+                </div>
+
+                <!-- Search & Filters Bar -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4 pb-4 border-b border-slate-100">
+                    <div class="relative w-full sm:w-80">
+                        <input
+                            type="text"
+                            id="tableFilterInput"
+                            oninput="filterDashboardTable()"
+                            placeholder="Filter by title, division, or metadata..."
+                            class="form-input text-sm py-2 pl-3"
+                        >
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="toggleViewAllBtn"
+                            onclick="toggleViewAll()"
+                            class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition"
+                        >
+                            View All Documents
+                        </button>
+                    </div>
+                </div>
+
+                <div id="loadingMessage" class="text-slate-500 py-6 text-center">
+                    Loading documents...
+                </div>
+
+                <div id="errorMessage" class="text-red-600 py-4 text-center hidden">
+                </div>
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-left">
+
+                        <thead>
+                            <tr class="border-b text-slate-500 text-sm">
+                                <th class="py-4 px-3">Document</th>
+                                <th class="py-4 px-3">Division</th>
+                                <th class="py-4 px-3">Uploaded</th>
+                                <th class="py-4 px-3">Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="documentTableBody">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <div id="emptyMessage" class="hidden text-center py-10 text-slate-500">
+                    No documents found. Upload your first document to get started.
+                </div>
+
+                <!-- Pagination Footer -->
+                <div id="paginationContainer" class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 pt-4 border-t border-slate-100 text-sm text-slate-500">
+                    <span id="paginationInfo">
+                        Showing 0 to 0 of 0 documents
+                    </span>
+
+                    <div class="flex items-center gap-2">
+                        <button
+                            id="prevPageBtn"
+                            onclick="changePage(-1)"
+                            class="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                        >
+                            Previous
+                        </button>
+                        <span id="currentPageIndicator" class="font-semibold text-slate-700 px-2">Page 1</span>
+                        <button
+                            id="nextPageBtn"
+                            onclick="changePage(1)"
+                            class="px-3 py-1.5 border border-slate-200 rounded-lg hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-medium"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <p class="text-center text-slate-400 text-sm mt-8">
+                Triad AI | Document Management System
+            </p>
+
+        </main>
+
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+
+</body>
+</html>

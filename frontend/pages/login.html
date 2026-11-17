@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triad DMS | Login</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-5">
+
+    <div class="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden grid md:grid-cols-2">
+
+        <div class="bg-slate-900 text-white p-10 flex flex-col justify-center">
+            <h1 class="text-3xl font-bold mb-4">Triad DMS</h1>
+
+            <p class="text-slate-300 text-lg mb-8">
+                Document Management System
+            </p>
+
+            <h2 class="text-2xl font-semibold mb-3">
+                Manage documents securely.
+            </h2>
+
+            <p class="text-slate-400 leading-relaxed">
+                Store, organize, search and share documents with
+                intelligent OCR and division-based access control.
+            </p>
+
+            <div class="mt-10 text-sm text-slate-500">
+                Secure document management platform
+            </div>
+        </div>
+
+        <div class="p-10 md:p-12">
+
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">
+                Welcome back
+            </h2>
+
+            <p class="text-slate-500 mb-8">
+                Sign in to access your workspace.
+            </p>
+
+            <form id="loginForm" onsubmit="loginUser(event)">
+
+                <label class="block text-sm font-medium mb-2">
+                    Email address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    required
+                    placeholder="you@example.com"
+                    class="form-input mb-5"
+                >
+
+                <label class="block text-sm font-medium mb-2">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    required
+                    placeholder="Enter your password"
+                    class="form-input mb-6"
+                >
+
+                <button
+                    type="submit"
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+                >
+                    Sign In
+                </button>
+
+                <p id="message" class="mt-4 text-sm text-center"></p>
+
+            </form>
+
+            <p class="text-center text-sm text-slate-500 mt-8">
+                Don't have an account?
+
+                <a href="/static/pages/signup.html"
+                   class="text-blue-600 font-semibold hover:underline">
+                    Create account
+                </a>
+            </p>
+
+        </div>
+    </div>
+
+    <script src="/static/js/auth.js"></script>
+
+</body>
+</html>

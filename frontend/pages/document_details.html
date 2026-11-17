@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Details | Triad DMS</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="flex min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white p-6 hidden md:block">
+
+            <h1 class="text-2xl font-bold mb-2">TRIAD DMS</h1>
+
+            <p class="text-slate-400 text-sm mb-10">
+                Document Management System
+            </p>
+
+            <nav class="space-y-3">
+
+                <a href="/static/pages/dashboard.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Dashboard
+                </a>
+
+                <a href="/static/pages/upload.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Upload Document
+                </a>
+
+                <a href="/static/pages/search.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Search Documents
+                </a>
+
+                <a href="/static/pages/access_requests.html"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Access Requests
+                </a>
+
+                <a href="/static/pages/admin.html"
+                   id="adminLink"
+                   class="block px-4 py-3 rounded-lg hover:bg-slate-800">
+                    Admin Settings
+                </a>
+
+            </nav>
+
+            <button onclick="logoutUser()"
+                class="w-full mt-12 bg-red-600 hover:bg-red-700 px-4 py-3 rounded-lg">
+                Logout
+            </button>
+
+        </aside>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-10">
+
+            <!-- Top Navigation / Breadcrumb -->
+            <div class="mb-6 flex items-center justify-between">
+                <a href="/static/pages/dashboard.html" class="inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-800 transition">
+                    ← Back to Dashboard
+                </a>
+                <span id="divisionBadge" class="hidden text-xs font-semibold px-3 py-1.5 rounded-full bg-blue-100 text-blue-800"></span>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="bg-white rounded-xl shadow-sm p-12 text-center text-slate-500">
+                <div class="inline-block animate-spin text-3xl mb-3">⏳</div>
+                <p class="font-medium">Loading document details...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden bg-white rounded-xl shadow-sm p-8 text-center max-w-2xl mx-auto">
+                <div class="text-5xl mb-3">⚠️</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Unable to Load Document</h3>
+                <p id="errorMessage" class="text-slate-500 mb-6"></p>
+                <a href="/static/pages/dashboard.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-lg inline-block">
+                    Return to Dashboard
+                </a>
+            </div>
+
+            <!-- Access Denied / Request Access State -->
+            <div id="accessDeniedState" class="hidden bg-white rounded-xl shadow-sm p-8 max-w-2xl mx-auto border-t-4 border-amber-500">
+                <div class="text-4xl mb-3">🔒</div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2">Cross-Division Document Restricted</h3>
+                <p class="text-slate-600 mb-6">
+                    This document belongs to another division. By default, division documents are isolated. You can submit an access request to view and download this file.
+                </p>
+
+                <form id="requestAccessForm" onsubmit="submitAccessRequest(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">
+                            Reason for Access Request *
+                        </label>
+                        <textarea
+                            id="accessReason"
+                            rows="3"
+                            class="form-input"
+                            placeholder="Explain why you require access to this document..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <div id="accessRequestMessage" class="hidden text-sm p-3 rounded-lg"></div>
+
+                    <button
+                        type="submit"
+                        id="submitRequestBtn"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition"
+                    >
+                        Submit Access Request
+                    </button>
+                </form>
+            </div>
+
+            <!-- Document Details Container -->
+            <div id="documentDetailsContainer" class="hidden space-y-8 max-w-5xl">
+
+                <!-- Primary Document Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row justify-between md:items-start gap-6 border-b border-slate-100 pb-6 mb-6">
+                        <div>
+                            <h2 id="docTitle" class="text-3xl font-bold text-slate-800 break-words">
+                                Document Title
+                            </h2>
+                            <p id="docFilename" class="text-slate-500 text-sm mt-1">
+                                filename.pdf
+                            </p>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button
+                                id="downloadBtn"
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg transition inline-flex items-center gap-2"
+                            >
+                                <span>📥</span> Download File
+                            </button>
+
+                            <button
+                                id="deleteBtn"
+                                class="hidden bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-semibold px-5 py-2.5 rounded-lg transition inline-flex items-center gap-2"
+                            >
+                                <span>🗑️</span> Delete Document
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metadata Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Division</span>
+                            <p id="docDivision" class="text-base font-bold text-slate-800 mt-1">-</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Uploaded Date</span>
+                            <p id="docUploadedAt" class="text-base font-bold text-slate-800 mt-1">-</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Uploader ID</span>
+                            <p id="docUploadedBy" class="text-base font-bold text-slate-800 mt-1 truncate">-</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-4 rounded-lg">
+                            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Document ID</span>
+                            <p id="docId" class="text-base font-bold text-slate-800 mt-1 truncate">-</p>
+                        </div>
+                    </div>
+
+                    <!-- Description (if present) -->
+                    <div id="docDescriptionContainer" class="hidden mt-6 pt-6 border-t border-slate-100">
+                        <h4 class="text-sm font-semibold text-slate-700 mb-2">Description</h4>
+                        <p id="docDescription" class="text-slate-600 text-sm whitespace-pre-line leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Custom Metadata Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <span>🏷️</span> Custom Dynamic Metadata
+                    </h3>
+
+                    <div id="customMetadataContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    </div>
+
+                    <p id="noMetadataMsg" class="hidden text-slate-400 text-sm py-4">
+                        No custom metadata fields attached to this document.
+                    </p>
+                </div>
+
+                <!-- OCR Extracted Text Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <span>🔍</span> Extracted OCR Content
+                        </h3>
+
+                        <button
+                            id="copyOcrBtn"
+                            onclick="copyOcrText()"
+                            class="text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition inline-flex items-center gap-1.5"
+                        >
+                            📋 Copy Text
+                        </button>
+                    </div>
+
+                    <p class="text-xs text-slate-400 mb-4">
+                        Text automatically extracted from selectable PDF layers and PyMuPDF/Tesseract OCR for scanned pages.
+                    </p>
+
+                    <div class="bg-slate-900 rounded-xl p-5 overflow-hidden">
+                        <pre id="ocrTextContent" class="text-slate-200 text-sm font-mono whitespace-pre-wrap break-words max-h-96 overflow-y-auto leading-relaxed">No OCR text extracted.</pre>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div id="deleteModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+                    <div class="text-red-500 text-4xl mb-3">⚠️</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">Delete Document?</h3>
+                    <p class="text-slate-600 text-sm mb-6">
+                        Are you sure you want to delete this document? This will permanently delete both the database record and the file stored in GridFS. This action cannot be undone.
+                    </p>
+
+                    <div class="flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closeDeleteModal()"
+                            class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold px-4 py-2 rounded-lg transition text-sm"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            id="confirmDeleteBtn"
+                            onclick="executeDocumentDelete()"
+                            class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-lg transition text-sm"
+                        >
+                            Confirm Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-center text-slate-400 text-sm mt-8">
+                Triad AI | Document Management System
+            </p>
+
+        </main>
+
+    </div>
+
+    <script src="/static/js/documents.js"></script>
+
+</body>
+</html>
